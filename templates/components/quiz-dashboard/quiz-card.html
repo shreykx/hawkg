@@ -1,0 +1,112 @@
+<div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
+  <button
+    type="button"
+    @click="openQuizMaker();"
+    class="rounded-xl h-[240px] outline-none border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 cursor-pointer active:scale-[0.98] transition-all duration-50"
+  >
+    <i data-lucide="plus" class="w-8 h-8"></i>
+    <span class="font-semibold text-sm">Create new quiz</span>
+  </button>
+  <template x-for="quiz in quizDashSection.quizzes" :key="quiz.id">
+    <div
+      class="rounded-xl relative h-[240px] shadow overflow-hidden hover:bg-gray-100 cursor-pointer transition-scale duration-50"
+      x-data="{ hovering: false, pressing : false }"
+      :class="{
+        'scale-[0.98]': pressing,
+        'scale-[1.05]': hovering && !pressing,
+        'scale-[1]': !hovering && !pressing
+      }"
+      @mouseenter="hovering = true"
+      @mouseleave="hovering = false"
+      @mousedown="if (!$event.target.closest('.no-press')) pressing = true"
+      @mouseup.window="pressing = false"
+    >
+      <div class="relative">
+        <img
+          :src="quiz.banner_image"
+          :alt="quiz.title"
+          class="w-full h-14 object-cover"
+        />
+        <div
+          class="absolute inset-0 bg-black/50 transition-colors duration-200"
+          :class="{ 'bg-transparent': hovering }"
+        ></div>
+      </div>
+      <!-- absolute container -->
+      <div
+        x-show="hovering"
+        x-transition
+        x-cloak
+        class="no-press bg-white absolute top-2 right-2 border border-gray-200 rounded-md"
+      >
+        <button
+          type="button"
+          class="p-2 rounded-md hover:bg-gray-100 active:scale-[0.9] active:opacity-[0.9] transition-all duration-50 cursor-pointer"
+        >
+          <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <!-- main data show -->
+      <div
+        class="relative bg-white p-1 rounded-r-md border border-l-0 border-gray-200 w-[max-content] max-w-[calc(100%-0.5rem)] mt-[-19px]"
+      >
+        <p
+          x-text="quiz.title || 'No Title'"
+          class="font-bold text-lg truncate"
+        ></p>
+      </div>
+      <div class="p-1 overflow-hidden">
+        <p
+          x-text="quiz.description || 'No description'"
+          class="text-sm text-gray-600"
+        ></p>
+        <p class="text-sm text-gray-600 flex items-center gap-1">
+          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+          Created by <span class="text-gray-700 font-bold">you</span> on
+          <span x-text="formatDate(quiz.created_at)"></span>
+        </p>
+      </div>
+      <div class="flex gap-1 px-1 py-1 overflow-hidden">
+        <template x-if="quiz.tags?.length">
+          <template x-for="tag in quiz.tags" :key="tag">
+            <span
+              x-text="tag"
+              class="shrink-0 px-2 py-0.5 text-xs bg-orange-100 text-orange-600 hover:bg-orange-500 hover:text-white rounded-full active:opacity-[0.9] transition-all duration-50"
+            ></span>
+          </template>
+        </template>
+
+        <template x-if="!quiz.tags?.length">
+          <span class="text-xs text-orange-300 italic">No tags</span>
+        </template>
+      </div>
+      <div
+        class="absolute bottom-0 left-0 right-0 grid grid-cols-3 border-t border-gray-200"
+      >
+        <div class="p-2 text-center border-r border-gray-200">
+          <p
+            x-text="quiz.metadata.takers"
+            class="font-semibold text-orange-500"
+          ></p>
+          <p class="text-xs text-gray-500">takers</p>
+        </div>
+
+        <div class="p-2 text-center border-r border-gray-200">
+          <p
+            x-text="quiz.metadata.questions"
+            class="font-semibold text-blue-500"
+          ></p>
+          <p class="text-xs text-gray-500">questions</p>
+        </div>
+
+        <div class="p-2 text-center">
+          <p
+            x-text="quiz.metadata.quiz_rating"
+            class="font-semibold text-gray-500"
+          ></p>
+          <p class="text-xs text-gray-500">rating</p>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>

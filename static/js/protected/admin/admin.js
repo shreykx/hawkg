@@ -1,0 +1,7 @@
+function Admin() {
+    return {
+        init () {
+            
+        }
+    }
+}

@@ -1,0 +1,33 @@
+<div
+  x-show="profileMenuOpen"
+  x-cloak
+  x-transition:enter="transition ease-out duration-150"
+  x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+  x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+  x-transition:leave="transition ease-in duration-100"
+  x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+  x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+  @click.outside="
+    if (!$event.target.closest('[data-profile-avatar]')) profileMenuOpen = false
+  "
+  @keydown.escape.window="profileMenuOpen = false"
+  class="fixed top-16 right-4 z-50 origin-top-right w-[max-content] h-[max-content] bg-white shadow-md py-2"
+>
+  <button
+    type="submit"
+    @click="profileMenuOpen = false; openSettings();"
+    class="flex items-center gap-2 min-w-[250px] justify-center py-3 hover:bg-gray-100 hover:text-blue-600 transition-all duration-100 active:opacity-[0.6] cursor-pointer"
+  >
+    <i data-lucide="cog" class="w-5.5 h-5.5"></i>
+    <span>Settings</span>
+  </button>
+  <form method="post" action="/auth/signout">
+    <button
+      type="submit"
+      class="flex items-center gap-2 min-w-[250px] justify-center py-3 hover:bg-red-50 hover:text-red-500 transition-all duration-100 active:opacity-[0.6] cursor-pointer"
+    >
+      <i data-lucide="log-out" class="w-5.5 h-5.5"></i>
+      <span>Sign Out</span>
+    </button>
+  </form>
+</div>

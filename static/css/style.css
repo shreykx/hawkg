@@ -1,0 +1,16 @@
+@keyframes modal-bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+  }
+  70% {
+    transform: scale(0.98);
+  }
+}
+
+.modal-bounce {
+  animation: modal-bounce 0.3s ease;
+}

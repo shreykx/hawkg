@@ -1,0 +1,289 @@
+<div
+  x-show="settingsOpen"
+  @keydown.escape.window="settingsOpen = false"
+  class="fixed top-0 left-0 w-full h-full bg-white shadow-xl overflow-scroll z-100"
+  x-transition:enter="transition ease-out duration-200"
+  x-transition:enter-start="opacity-0 scale-80"
+  x-transition:enter-end="opacity-100 scale-100"
+  x-transition:leave="transition ease-in duration-150"
+  x-transition:leave-start="opacity-100 scale-100"
+  x-transition:leave-end="opacity-0 scale-80"
+  @keydown.ctrl.alt.arrow-up.window.prevent="changeSection(-1)"
+  @keydown.ctrl.alt.arrow-down.window.prevent="changeSection(1)"
+>
+  <div class="flex items-center gap-2 px-4 h-14">
+    <button
+      type="button"
+      @click="settingsOpen = false"
+      class="cursor-pointer active:opacity-[0.8] hover:text-orange-500"
+    >
+      <i data-lucide="circle-x" class="w-6 h-6"></i>
+    </button>
+
+    <h1 class="font-bold text-xl">Settings</h1>
+
+    <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-400"></i>
+
+    <!-- desktop: plain text breadcrumb -->
+    <span
+      class="hidden sm:inline text-xl font-medium capitalize text-neutral-500"
+      x-text="settingsVars.selectedSection"
+    ></span>
+
+    <!-- mobile: dropdown replacing the nav -->
+    <div
+      class="relative sm:hidden"
+      x-data="{ open: false }"
+      @click.outside="open = false"
+    >
+      <button
+        type="button"
+        @click="open = !open"
+        class="flex items-center gap-1 text-xl font-medium capitalize text-neutral-500 cursor-pointer active:opacity-[0.8]"
+      >
+        <span x-text="settingsVars.selectedSection"></span>
+        <i
+          data-lucide="chevron-down"
+          class="w-4 h-4"
+          :class="{ 'rotate-180': open }"
+        ></i>
+      </button>
+      <div
+        x-show="open"
+        x-transition
+        x-cloak
+        class="absolute top-full left-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden z-10"
+      >
+        <template x-for="section in settingsVars.sections" :key="section.id">
+          <button
+            type="button"
+            @click="settingsVars.selectedSection = section.id; open = false"
+            class="w-full text-left px-3 py-2 text-sm capitalize hover:bg-gray-100 cursor-pointer"
+            :class="{ 'text-orange-500 font-semibold': settingsVars.selectedSection === section.id }"
+            x-text="section.label"
+          ></button>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex">
+    <div class="px-6 py-6 hidden sm:block sm:w-[340px] max-w-[340px] shrink-0">
+      <div class="flex flex-col gap-1">
+        <template x-for="section in settingsVars.sections" :key="section.id">
+          <button
+            @click="settingsVars.selectedSection = section.id"
+            :class="settingsVars.selectedSection === section.id
+              ? 'bg-gray-50 font-semibold border-r-4 border-orange-500'
+              : 'hover:bg-gray-50'"
+            class="text-left px-4 py-3 active:opacity-[0.95] cursor-pointer outline-orange-500"
+            x-text="section.label"
+          ></button>
+        </template>
+      </div>
+    </div>
+
+    <div
+      class="p-2 flex-1 min-w-0"
+      x-show="settingsVars.selectedSection == 'account'"
+    >
+      <div class="flex flex-col gap-6">
+        <!-- profile photo -->
+        <div class="w-20 h-20">
+          <button
+            type="button"
+            class="relative w-20 h-20 rounded-xl overflow-hidden group cursor-pointer"
+          >
+            <img
+              src="{{ user.profile_image }}?v={{ user.profile_image_version }}"
+              alt="Profile"
+              class="w-20 h-20 object-cover rounded-xl"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+
+            <div
+              class="w-20 h-20 rounded-xl bg-gray-200 items-center justify-center text-xl font-semibold text-gray-600"
+              style="display: none"
+            >
+              {{ (user.display_name or user.username)[0]|upper }}
+            </div>
+
+            <div
+              class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
+              <i data-lucide="pencil" class="w-5 h-5 text-white"></i>
+            </div>
+          </button>
+          <div
+            class="w-20 h-20 rounded-xl bg-gray-200 items-center justify-center text-xl font-semibold text-gray-600"
+            style="display: none"
+          >
+            {{ user.display_name[0]|upper }}
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-md font-bold">General</p>
+          <p class="text-gray-600 text-sm">
+            Usual settings related to your account.
+          </p>
+        </div>
+        <!-- Display name -->
+        <div class="space-y-1 flex-1 w-full sm:max-w-2/3">
+          <p class="text-sm text-gray-700">Your display name</p>
+
+          <div class="flex w-full items-center gap-2">
+            <input
+              type="text"
+              value="{{ user.display_name or 'Unnamed User' }}"
+              readonly
+              class="px-4 py-2 bg-gray-50 read-only:text-gray-500 w-full rounded outline-orange-500"
+            />
+
+            <button
+              type="button"
+              class="hover:bg-gray-50 gap-2 flex shrink-0 whitespace-nowrap p-2 rounded hover:outline-2 cursor-pointer active:bg-blue-500 active:text-white text-gray-700 active:opacity-[0.9] outline-blue-500"
+            >
+              <i data-lucide="pencil" class="w-5 h-5"></i>
+              <span class="text-md">Edit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="space-y-1 flex-1 w-full sm:max-w-2/3">
+          <p class="text-sm text-gray-700">Your email</p>
+
+          <div class="flex w-full items-center gap-2">
+            <input
+              type="text"
+              value="{{ user.email }}"
+              readonly
+              class="px-4 py-2 bg-gray-50 read-only:text-gray-500 w-full rounded outline-orange-500"
+            />
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="space-y-1 flex-1 w-full sm:max-w-2/3">
+          <p class="text-sm text-gray-700">Your username</p>
+
+          <div class="flex w-full items-center gap-2">
+            <div class="flex items-center w-full px-4 py-2 bg-gray-50 rounded">
+              <i data-lucide="at-sign" class="w-5 h-5 text-gray-400 mr-2"></i>
+
+              <input
+                type="text"
+                value="{{ user.username }}"
+                readonly
+                class="w-full bg-transparent outline-none read-only:text-gray-500"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="hover:bg-gray-50 gap-2 flex shrink-0 whitespace-nowrap p-2 rounded hover:outline-2 cursor-pointer active:bg-blue-500 active:text-white text-gray-700 active:opacity-[0.9] outline-blue-500"
+            >
+              <i data-lucide="pencil" class="w-5 h-5"></i>
+              <span class="text-md">Change username</span>
+            </button>
+          </div>
+        </div>
+        <div class="py-4">
+          <div class="space-y-1 max-w-2/3">
+            <p class="text-md font-bold">Social</p>
+            <p class="text-gray-600 text-sm">
+              Settings related to how you're visible on hawkg. Ensure privacy
+              details, as they might reflect your overall experience.
+            </p>
+          </div>
+        </div>
+
+        <div class="py-4">
+          <div class="space-y-1 max-w-2/3">
+            <p class="text-md font-bold">Stats</p>
+            <p class="text-gray-600 text-sm">
+              Some graphs and numbers related to your usage of this platform. We
+              put some
+              <a
+                class="text-blue-600 underline cursor-pointer active:opacity-[0.9]"
+                href="#"
+                >boundaries</a
+              >
+              to protect our services, and there are options to
+              <a
+                href="#"
+                class="text-blue-600 underline cursor-pointer active:opacity-[0.9]"
+                >upgrade</a
+              >.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="p-2 flex-1 min-w-0"
+      x-show="settingsVars.selectedSection == 'appearance'"
+    >
+      {% include "components/appearance-settings/appearance.html" %}
+    </div>
+
+    <div
+      class="p-2 flex-1 min-w-0"
+      x-show="settingsVars.selectedSection == 'security'"
+    >
+      {% include "components/security-settings/security.html" %}
+    </div>
+
+    <div
+      class="p-2 flex-1 min-w-0"
+      x-show="settingsVars.selectedSection == 'shortcuts'"
+    >
+      <div
+        class="w-full sm:max-w-2/3 border border-gray-200 rounded-md overflow-hidden"
+      >
+        <table class="w-full text-sm">
+          <tbody class="divide-y divide-gray-200">
+            <template
+              x-for="shortcut in settingsVars.shortcuts"
+              :key="shortcut.id"
+            >
+              <tr>
+                <td
+                  class="px-4 py-3 text-gray-700"
+                  x-text="shortcut.label"
+                ></td>
+
+                <td class="px-4 py-3 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <template
+                      x-for="(key, index) in shortcut.keys"
+                      :key="index"
+                    >
+                      <span class="flex items-center gap-1">
+                        <kbd
+                          class="px-2 py-1 text-xs font-medium bg-gray-100 border border-gray-300 rounded-md"
+                          x-text="key"
+                        ></kbd>
+
+                        <span
+                          x-show="index < shortcut.keys.length - 1"
+                          class="text-gray-400"
+                          >+</span
+                        >
+                      </span>
+                    </template>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

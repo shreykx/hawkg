@@ -1,0 +1,62 @@
+<div
+  x-show="quizMakerOpen"
+  @keydown.escape.window="quizMakerOpen = false"
+  class="fixed top-0 left-0 w-full h-full bg-white shadow-xl overflow-scroll z-100"
+  x-transition:enter="transition ease-out duration-200"
+  x-transition:enter-start="opacity-0 scale-80"
+  x-transition:enter-end="opacity-100 scale-100"
+  x-transition:leave="transition ease-in duration-150"
+  x-transition:leave-start="opacity-100 scale-100"
+  x-transition:leave-end="opacity-0 scale-80"
+>
+  <div class="flex items-center gap-2 px-4 h-14 relative">
+    <button
+      type="button"
+      @click="quizMakerOpen = false"
+      class="cursor-pointer active:opacity-[0.8] hover:text-orange-500"
+    >
+      <i data-lucide="circle-x" class="w-6 h-6"></i>
+    </button>
+
+    <h1 class="font-bold text-xl">New Quiz</h1>
+
+    <div
+      class="absolute left-1/2 -translate-x-1/2 md:left-[calc((100%+33.333%)/2)] max-sm:static max-sm:ml-auto max-sm:translate-x-0"
+    >
+      <div
+        class="relative p-1 bg-gray-200 rounded-xl flex"
+        x-data="{ pillLeft: 0, pillWidth: 0, updatePill() {
+        const active = $refs[quizMakerVars.selectedViewport];
+        this.pillLeft = active.offsetLeft;
+        this.pillWidth = active.offsetWidth;
+      } }"
+        x-init="updatePill()"
+        x-effect="quizMakerVars.selectedViewport; updatePill()"
+      >
+        <div
+          class="absolute top-1 bottom-1 bg-white rounded-md shadow-sm transition-all duration-200 ease-out"
+          :style="`left: ${pillLeft}px; width: ${pillWidth}px;`"
+        ></div>
+
+        <button
+          type="button"
+          x-ref="build"
+          class="relative z-10 px-3 py-1 rounded-md cursor-pointer outline-orange-500"
+          @click="quizMakerVars.selectedViewport = 'build'"
+        >
+          Build
+        </button>
+
+        <button
+          type="button"
+          x-ref="preview"
+          class="relative z-10 px-3 py-1 rounded-md cursor-pointer outline-orange-500"
+          @click="quizMakerVars.selectedViewport = 'preview'"
+        >
+          Preview
+        </button>
+      </div>
+    </div>
+  </div>
+  {% include "components/quiz-builder/quiz-settings.html" %}
+</div>

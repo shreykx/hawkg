@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block title %}hawkg - dashboard{% endblock %} {%
+block content %}
+<div
+  x-data="Dashboard()"
+  @keydown.ctrl.k.window.prevent="$refs.search.focus()"
+  @keydown.escape.window="$refs.search.blur()"
+  @keydown.ctrl.shift.i.window.prevent="openSettings()"
+  @keydown.ctrl.alt.n.window.prevent="openQuizMaker()"
+>
+  {% include "components/dashtop-nav.html" %} {% include
+  "components/profile-click-options.html" %} 
+  {% include "components/quiz-builder/new-quiz.html" %}
+  {% include "components/settings-page.html" %}
+  {% include
+    "components/quiz-dashboard/layout.html" %}
+</div>
+{% endblock %}
