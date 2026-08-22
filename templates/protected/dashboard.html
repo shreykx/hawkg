@@ -5,7 +5,7 @@ block content %}
   @keydown.ctrl.k.window.prevent="$refs.search.focus()"
   @keydown.escape.window="$refs.search.blur()"
   @keydown.ctrl.shift.i.window.prevent="openSettings()"
-  @keydown.ctrl.alt.n.window.prevent="openQuizMaker()"
+  @keydown.ctrl.alt.n.window.prevent="quizMakerVars.openQuizMaker()"
 >
   {% include "components/dashtop-nav.html" %} {% include
   "components/profile-click-options.html" %} 

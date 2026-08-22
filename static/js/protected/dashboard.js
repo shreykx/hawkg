@@ -2,9 +2,26 @@ function Dashboard() {
   return {
     profileMenuOpen: false,
     settingsOpen: false,
-    quizMakerOpen: true,
+    quizMakerVars: {
+      quizMakerOpen: true,
+      openQuizId: 12,
+      selectedViewport: "build",
+
+      quizData: {
+        visibility: "unlisted",
+      },
+
+      openQuizMaker() {
+        this.quizMakerOpen = true;
+      },
+
+      closeQuizMaker() {
+        this.quizMakerOpen = false;
+      },
+    },
     settingsVars: {
       selectedSection: "account",
+
       sections: [
         { id: "account", label: "Account" },
         { id: "appearance", label: "Appearance" },
@@ -23,25 +40,33 @@ function Dashboard() {
           label: "Previous section",
           keys: ["Ctrl", "Alt", "↑"],
         },
-        { id: "next", label: "Next section", keys: ["Ctrl", "Alt", "↓"] },
-        { id: "escape", label: "Close / unfocus", keys: ["Esc"] },
-        { id: "quiz-maker", label: "Open quiz maker", keys: ["Ctrl", "Alt", "N"] },
+        {
+          id: "next",
+          label: "Next section",
+          keys: ["Ctrl", "Alt", "↓"],
+        },
+        {
+          id: "escape",
+          label: "Close / unfocus",
+          keys: ["Esc"],
+        },
+        {
+          id: "quiz-maker",
+          label: "Open quiz maker",
+          keys: ["Ctrl", "Alt", "N"],
+        },
       ],
+
       socialSettings: {},
       appearanceSettings: {},
       securitySettings: {},
     },
-    quizMakerVars : {
-      selectedViewport: 'build' 
-    },
+
     openSettings() {
-      this.quizMakerOpen = false;
+      this.quizMakerVars.quizMakerOpen = false;
       this.settingsOpen = true;
     },
-    openQuizMaker() {
-      this.settingsOpen = false;
-      this.quizMakerOpen = true;
-    },
+
     quizDashSection: {
       quizzes: [
         {
@@ -104,6 +129,7 @@ function Dashboard() {
         },
       ],
     },
+
     init() {
       this.$watch("profileMenuOpen", (open) => {
         if (open) {
@@ -117,23 +143,30 @@ function Dashboard() {
     toggleProfileMenu() {
       this.profileMenuOpen = !this.profileMenuOpen;
     },
+
     changeSection(direction) {
       const sections = this.settingsVars.sections;
+
       const currentIndex = sections.findIndex(
-        (s) => s.id === this.settingsVars.selectedSection,
+        (s) => s.id === this.settingsVars.selectedSection
       );
 
       let newIndex = currentIndex + direction;
 
-      // wrap around
-      if (newIndex < 0) newIndex = sections.length - 1;
-      if (newIndex >= sections.length) newIndex = 0;
+      if (newIndex < 0) {
+        newIndex = sections.length - 1;
+      }
+
+      if (newIndex >= sections.length) {
+        newIndex = 0;
+      }
 
       this.settingsVars.selectedSection = sections[newIndex].id;
     },
+
     timeAgo(timestamp) {
       const seconds = Math.floor(
-        (Date.now() - new Date(timestamp).getTime()) / 1000,
+        (Date.now() - new Date(timestamp).getTime()) / 1000
       );
 
       if (seconds < 60) return `${seconds}s ago`;
@@ -153,6 +186,7 @@ function Dashboard() {
       const years = Math.floor(months / 12);
       return `${years}y ago`;
     },
+
     formatDate(timestamp) {
       return new Date(timestamp).toLocaleDateString("en-GB", {
         day: "numeric",

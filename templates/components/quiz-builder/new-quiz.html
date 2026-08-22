@@ -1,6 +1,6 @@
 <div
-  x-show="quizMakerOpen"
-  @keydown.escape.window="quizMakerOpen = false"
+  x-show="quizMakerVars.quizMakerOpen"
+  @keydown.escape.window="quizMakerVars.closeQuizMaker()"
   class="fixed top-0 left-0 w-full h-full bg-white shadow-xl overflow-scroll z-100"
   x-transition:enter="transition ease-out duration-200"
   x-transition:enter-start="opacity-0 scale-80"
@@ -12,14 +12,18 @@
   <div class="flex items-center gap-2 px-4 h-14 relative">
     <button
       type="button"
-      @click="quizMakerOpen = false"
+      @click="quizMakerVars.closeQuizMaker()"
       class="cursor-pointer active:opacity-[0.8] hover:text-orange-500"
     >
       <i data-lucide="circle-x" class="w-6 h-6"></i>
     </button>
-
-    <h1 class="font-bold text-xl">New Quiz</h1>
-
+    <div class="flex items-center gap-2">
+      <h1 class="font-bold text-xl">New Quiz</h1>
+      <p
+        x-text="'#' + (quizMakerVars.openQuizId ?? 'unknown')"
+        class="text-sm text-blue-600 text-center font-bold"
+      ></p>
+    </div>
     <div
       class="absolute left-1/2 -translate-x-1/2 md:left-[calc((100%+33.333%)/2)] max-sm:static max-sm:ml-auto max-sm:translate-x-0"
     >
@@ -57,6 +61,13 @@
         </button>
       </div>
     </div>
+    <button
+      type="button"
+      class="ml-auto flex items-center gap-2 cursor-pointer active:opacity-[0.8] hover:text-orange-500 hover:bg-orange-50 px-4 py-2 rounded-xl transition-all duration-100"
+    >
+      <span class="text-sm font-medium">Launch Analytics</span>
+      <i data-lucide="square-arrow-out-up-right" class="w-5 h-5"></i>
+    </button>
   </div>
   {% include "components/quiz-builder/quiz-settings.html" %}
 </div>

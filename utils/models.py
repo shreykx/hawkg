@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import (
     Column, Integer, String, Text, ForeignKey, DateTime,
     UniqueConstraint, JSON, func, CheckConstraint
@@ -9,7 +11,8 @@ from utils.db.database import Base
 class Quiz(Base):
     __tablename__ = "quizzes"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     title = Column(String, nullable=False)
@@ -17,6 +20,7 @@ class Quiz(Base):
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     preferences = Column(JSON, nullable=False, default=dict) 
     banner_image = Column(String, nullable=True)
+    visibility = Column(String, nullable=False, default="unlisted")
     submissions = relationship("QuizSubmission", back_populates="quiz", cascade="all, delete-orphan")
     questions = relationship("QuizQuestion", back_populates="quiz", cascade="all, delete-orphan")
 
@@ -26,7 +30,7 @@ class QuizSubmission(Base):
     __tablename__ = "quiz_submissions"
 
     id = Column(Integer, primary_key=True, index=True)
-    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
+    quiz_id = Column(String(36), ForeignKey("quizzes.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     submitted_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
@@ -41,7 +45,7 @@ class QuizQuestion(Base):
     __tablename__ = "quiz_questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
+    quiz_id = Column(String(36), ForeignKey("quizzes.id"), nullable=False)
     prompt = Column(Text, nullable=False)
     question_type = Column(String, nullable=False)  # e.g. "mcq", "free_text"
     order_index = Column(Integer, nullable=False, default=0)
