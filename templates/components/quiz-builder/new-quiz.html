@@ -69,5 +69,16 @@
       <i data-lucide="square-arrow-out-up-right" class="w-5 h-5"></i>
     </button>
   </div>
-  {% include "components/quiz-builder/quiz-settings.html" %}
+  <!-- Quiz workspace -->
+  <div class="flex min-h-[calc(100vh-3.5rem)]">
+    <!-- Settings sidebar -->
+    <aside class="w-1/3 shrink-0">
+      {% include "components/quiz-builder/quiz-settings.html" %}
+    </aside>
+
+    <!-- Main renderer area -->
+    <main class="flex-1 min-w-0">
+      {% include "components/quiz-renderer/renderer.html" %}
+    </main>
+  </div>
 </div>
