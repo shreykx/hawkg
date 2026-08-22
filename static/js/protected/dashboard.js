@@ -68,66 +68,7 @@ function Dashboard() {
     },
 
     quizDashSection: {
-      quizzes: [
-        {
-          id: 1,
-          created_at: "2026-08-01T09:15:00Z",
-          updated_at: "2026-08-02T14:20:00Z",
-          title: "Team Culture Pulse Check",
-          description:
-            "A quick pulse survey on team culture and communication.",
-          created_by: 1,
-          banner_image: "https://picsum.photos/seed/quiz1/600/300",
-          tags: ["team", "culture", "communication"],
-          metadata: {
-            quiz_rating: 4.7,
-            takers: 128,
-            questions: 15,
-          },
-        },
-        {
-          id: 2,
-          created_at: "2026-08-05T11:00:00Z",
-          updated_at: "2026-08-05T11:00:00Z",
-          title: "Product Feature Feedback",
-          description: "Help us prioritize the next set of features.",
-          created_by: 1,
-          banner_image: "https://picsum.photos/seed/quiz2/600/300",
-          metadata: {
-            quiz_rating: 4.3,
-            takers: 76,
-            questions: 10,
-          },
-        },
-        {
-          id: 3,
-          created_at: "2026-08-10T08:30:00Z",
-          updated_at: "2026-08-12T16:45:00Z",
-          title: "Onboarding Experience Survey",
-          description: "Tell us how your first 30 days went.",
-          created_by: 1,
-          banner_image: "https://picsum.photos/seed/quiz3/600/300",
-          metadata: {
-            quiz_rating: 4.9,
-            takers: 243,
-            questions: 20,
-          },
-        },
-        {
-          id: 4,
-          created_at: "2026-08-15T13:00:00Z",
-          updated_at: "2026-08-15T13:00:00Z",
-          title: "Remote Work Preferences",
-          description: "",
-          created_by: 1,
-          banner_image: "https://picsum.photos/seed/quiz4/600/300",
-          metadata: {
-            quiz_rating: 4.5,
-            takers: 91,
-            questions: 12,
-          },
-        },
-      ],
+      quizzes: [],
     },
 
     init() {
@@ -138,6 +79,21 @@ function Dashboard() {
           });
         }
       });
+    
+      this.fetchQuizzes();
+    },
+    async fetchQuizzes() {
+      try {
+        const response = await fetch("/quiz/quizzes");
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error("Failed to fetch quizzes");
+        }
+        console.log(data);
+        this.quizDashSection.quizzes = data;
+      } catch (error) {
+        console.error("Failed to fetch quizzes:", error);
+      }
     },
 
     toggleProfileMenu() {

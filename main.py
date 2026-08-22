@@ -8,6 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from utils.db.database import Base, engine, SessionLocal
 from utils import models
 from routes.auth import router as auth_router
+from routes.quiz import router as quiz_router
 
 from dotenv import load_dotenv
 
@@ -74,6 +75,7 @@ async def dashboard(request: Request, user=Depends(require_auth)):
         request=request, name="protected/dashboard.html", context={"user": user}
     )
 
+app.include_router(quiz_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

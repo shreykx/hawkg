@@ -22,7 +22,13 @@
       @mouseup.window="pressing = false"
     >
       <div class="relative">
+        <div
+          class="w-full h-14 bg-orange-100"
+          :class="{ 'hidden': quiz.banner_image }"
+        ></div>
+
         <img
+          x-show="quiz.banner_image"
           :src="quiz.banner_image"
           :alt="quiz.title"
           class="w-full h-14 object-cover"
@@ -85,7 +91,7 @@
       >
         <div class="p-2 text-center border-r border-gray-200">
           <p
-            x-text="quiz.metadata.takers"
+            x-text="quiz.total_submissions"
             class="font-semibold text-orange-500"
           ></p>
           <p class="text-xs text-gray-500">takers</p>
@@ -93,17 +99,14 @@
 
         <div class="p-2 text-center border-r border-gray-200">
           <p
-            x-text="quiz.metadata.questions"
+            x-text="quiz.total_questions"
             class="font-semibold text-blue-500"
           ></p>
           <p class="text-xs text-gray-500">questions</p>
         </div>
 
         <div class="p-2 text-center">
-          <p
-            x-text="quiz.metadata.quiz_rating"
-            class="font-semibold text-gray-500"
-          ></p>
+          <p x-text="5" class="font-semibold text-gray-500"></p>
           <p class="text-xs text-gray-500">rating</p>
         </div>
       </div>
