@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
-from utils.models import Quiz, QuizSubmission, QuizQuestion
+from utils.models import Quiz, QuizSubmission, QuizQuestion, User
 
 
 def get_quizzes_by_user(db: Session, user_id: str):
@@ -63,12 +63,17 @@ def get_quiz(db: Session, quiz_id: int):
     if not quiz or quiz.visibility != "public":
         return None
 
+    user = db.query(User).filter(User.id == quiz.created_by).first()
+
     return {
         "id": quiz.id,
         "created_at": quiz.created_at,
         "title": quiz.title,
         "description": quiz.description,
-        "created_by": quiz.created_by,
+        "created_by": {
+            "id": user.id,
+            "username": user.username,
+        },
         "banner_image": quiz.banner_image,
         "questions": [
             {
@@ -82,6 +87,7 @@ def get_quiz(db: Session, quiz_id: int):
             for q in sorted(quiz.questions, key=lambda q: q.order_index)
         ],
     }
+
 
 def create_quiz(
     db: Session,
