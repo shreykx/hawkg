@@ -52,15 +52,18 @@ def get_quizzes_by_user(db: Session, user_id: str):
     ]
 
 
-def get_quiz(db: Session, quiz_id: int):
+def get_quiz_by_user(db: Session, quiz_id: int, user_id: int):
     quiz = (
         db.query(Quiz)
         .options(selectinload(Quiz.questions))
-        .filter(Quiz.id == quiz_id)
+        .filter(
+            Quiz.id == quiz_id,
+            Quiz.created_by == user_id,
+        )
         .first()
     )
 
-    if not quiz or quiz.visibility != "public":
+    if not quiz:
         return None
 
     user = db.query(User).filter(User.id == quiz.created_by).first()
@@ -68,6 +71,7 @@ def get_quiz(db: Session, quiz_id: int):
     return {
         "id": quiz.id,
         "created_at": quiz.created_at,
+        "updated_at": quiz.updated_at,
         "title": quiz.title,
         "description": quiz.description,
         "created_by": {
@@ -75,6 +79,8 @@ def get_quiz(db: Session, quiz_id: int):
             "username": user.username,
         },
         "banner_image": quiz.banner_image,
+        "visibility": quiz.visibility,
+        "preferences": quiz.preferences,
         "questions": [
             {
                 "id": q.id,

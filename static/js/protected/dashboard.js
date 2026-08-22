@@ -4,12 +4,8 @@ function Dashboard() {
     settingsOpen: false,
     quizMakerVars: {
       quizMakerOpen: true,
-      openQuizId: 12,
+      openQuizId: 1,
       selectedViewport: "build",
-
-      quizData: {
-        visibility: "unlisted",
-      },
 
       openQuizMaker() {
         this.quizMakerOpen = true;
@@ -79,7 +75,7 @@ function Dashboard() {
           });
         }
       });
-    
+
       this.fetchQuizzes();
     },
     async fetchQuizzes() {
@@ -104,7 +100,7 @@ function Dashboard() {
       const sections = this.settingsVars.sections;
 
       const currentIndex = sections.findIndex(
-        (s) => s.id === this.settingsVars.selectedSection
+        (s) => s.id === this.settingsVars.selectedSection,
       );
 
       let newIndex = currentIndex + direction;
@@ -122,7 +118,7 @@ function Dashboard() {
 
     timeAgo(timestamp) {
       const seconds = Math.floor(
-        (Date.now() - new Date(timestamp).getTime()) / 1000
+        (Date.now() - new Date(timestamp).getTime()) / 1000,
       );
 
       if (seconds < 60) return `${seconds}s ago`;
