@@ -1,3 +1,6 @@
+import sqlite3
+import uuid
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 

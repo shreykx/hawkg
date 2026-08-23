@@ -1,5 +1,5 @@
 function QuizRenderer() {
   return {
-    mode: "build",
+    // mode: "build",
   };
 }

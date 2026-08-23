@@ -4,7 +4,11 @@ from sqlalchemy.orm import Session, selectinload
 from utils.models import Quiz, QuizSubmission, QuizQuestion, User
 
 
-def get_quizzes_by_user(db: Session, user_id: str):
+class QuizQuestionHasResponsesError(Exception):
+    pass
+
+
+def get_quizzes_by_user(db: Session, user_id: int):
     submission_counts = (
         db.query(
             QuizSubmission.quiz_id,
@@ -52,7 +56,7 @@ def get_quizzes_by_user(db: Session, user_id: str):
     ]
 
 
-def get_quiz_by_user(db: Session, quiz_id: int, user_id: int):
+def get_quiz_by_user(db: Session, quiz_id: str, user_id: int):
     quiz = (
         db.query(Quiz)
         .options(selectinload(Quiz.questions))
@@ -116,5 +120,112 @@ def create_quiz(
     db.add(quiz)
     db.commit()
     db.refresh(quiz)
+
+    return quiz
+
+def update_quiz(
+    db: Session,
+    quiz_id: str,
+    user_id: int,
+    title: str | None = None,
+    description: str | None = None,
+    preferences: dict | None = None,
+    banner_image: str | None = None,
+    visibility: str | None = None,
+    questions: list[dict] | None = None,
+):
+    quiz = (
+        db.query(Quiz)
+        .filter(
+            Quiz.id == quiz_id,
+            Quiz.created_by == user_id,
+        )
+        .first()
+    )
+
+    if not quiz:
+        return None
+
+    if title is not None:
+        quiz.title = title
+
+    if description is not None:
+        quiz.description = description
+
+    if preferences is not None:
+        quiz.preferences = preferences
+
+    if banner_image is not None:
+        quiz.banner_image = banner_image
+
+    if visibility is not None:
+        quiz.visibility = visibility
+
+    if questions is not None:
+        existing_questions = {question.id: question for question in quiz.questions}
+        submitted_ids = [question["id"] for question in questions if question["id"] is not None]
+
+        if len(submitted_ids) != len(set(submitted_ids)):
+            raise ValueError("A question was submitted more than once")
+
+        unknown_ids = set(submitted_ids) - set(existing_questions)
+        if unknown_ids:
+            raise ValueError("A submitted question does not belong to this quiz")
+
+        removed_questions = [
+            question
+            for question_id, question in existing_questions.items()
+            if question_id not in submitted_ids
+        ]
+        if any(question.responses for question in removed_questions):
+            raise QuizQuestionHasResponsesError()
+
+        for question in removed_questions:
+            db.delete(question)
+
+        for order_index, question_data in enumerate(questions):
+            question_id = question_data["id"]
+
+            if question_id is None:
+                db.add(
+                    QuizQuestion(
+                        quiz_id=quiz.id,
+                        prompt=question_data["prompt"],
+                        question_type="free_text",
+                        order_index=order_index,
+                        options=None,
+                        preferences={},
+                    )
+                )
+                continue
+
+            question = existing_questions[question_id]
+            question.prompt = question_data["prompt"]
+            question.order_index = order_index
+
+    db.commit()
+    db.refresh(quiz)
+
+    return quiz
+
+def delete_quiz(
+    db: Session,
+    quiz_id: str,
+    user_id: int,
+):
+    quiz = (
+        db.query(Quiz)
+        .filter(
+            Quiz.id == quiz_id,
+            Quiz.created_by == user_id,
+        )
+        .first()
+    )
+
+    if not quiz:
+        return None
+
+    db.delete(quiz)
+    db.commit()
 
     return quiz

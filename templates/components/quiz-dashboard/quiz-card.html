@@ -1,21 +1,22 @@
-<div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
+<div class="grid grid-cols-[repeat(auto-fill,minmax(260px,384px))] gap-4 p-0">
   <button
     type="button"
-    @click="quizMakerVars.openQuizMaker();"
-    class="rounded-xl h-[240px] outline-none border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 cursor-pointer active:scale-[0.98] transition-all duration-50"
+    @click="createQuiz();"
+    class="w-full rounded-xl h-60 outline-none border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-orange-400 hover:text-orange-500 hover:bg-orange-50 cursor-pointer active:scale-[0.98] transition-all duration-50"
   >
     <i data-lucide="plus" class="w-8 h-8"></i>
     <span class="font-semibold text-sm">Create new quiz</span>
   </button>
   <template x-for="quiz in quizDashSection.quizzes" :key="quiz.id">
     <div
-      class="rounded-xl relative h-[240px] shadow overflow-hidden hover:bg-gray-100 cursor-pointer transition-scale duration-50"
+      class="w-full rounded-xl relative h-60 shadow overflow-hidden hover:bg-gray-100 cursor-pointer transition-scale duration-50"
       x-data="{ hovering: false, pressing : false }"
       :class="{
         'scale-[0.98]': pressing,
         'scale-[1.05]': hovering && !pressing,
         'scale-[1]': !hovering && !pressing
       }"
+      @click="openQuiz(quiz.id)"
       @mouseenter="hovering = true"
       @mouseleave="hovering = false"
       @mousedown="if (!$event.target.closest('.no-press')) pressing = true"

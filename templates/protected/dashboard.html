@@ -2,10 +2,11 @@
 block content %}
 <div
   x-data="Dashboard()"
+  @quiz-deleted.window="removeQuiz($event.detail.quizId)"
   @keydown.ctrl.k.window.prevent="$refs.search.focus()"
   @keydown.escape.window="$refs.search.blur()"
   @keydown.ctrl.shift.i.window.prevent="openSettings()"
-  @keydown.ctrl.alt.n.window.prevent="quizMakerVars.openQuizMaker()"
+  @keydown.ctrl.alt.n.window.prevent="createQuiz()"
 >
   {% include "components/dashtop-nav.html" %} {% include
   "components/profile-click-options.html" %} 

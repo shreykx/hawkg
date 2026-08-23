@@ -2,11 +2,37 @@ function Dashboard() {
   return {
     profileMenuOpen: false,
     settingsOpen: false,
-    quizMakerVars: {
-      quizMakerOpen: true,
-      openQuizId: 1,
-      selectedViewport: "build",
+    async createQuiz() {
+      try {
+        const response = await fetch("/quiz/quizzes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: "Untitled Quiz",
+          }),
+        });
 
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Failed to create quiz");
+        }
+
+        this.quizMakerVars.openQuizId = data.id;
+        console.log(this.quizMakerVars.openQuizId);
+        
+        this.quizMakerVars.quizMakerOpen = true;
+
+        await this.fetchQuizzes();
+      } catch (error) {
+        console.error("Failed to create quiz:", error);
+      }
+    },
+    quizMakerVars: {
+      quizMakerOpen: false,
+      openQuizId: null,
       openQuizMaker() {
         this.quizMakerOpen = true;
       },
@@ -82,18 +108,36 @@ function Dashboard() {
       try {
         const response = await fetch("/quiz/quizzes");
         const data = await response.json();
+    
         if (!response.ok) {
           throw new Error("Failed to fetch quizzes");
         }
-        console.log(data);
+    
         this.quizDashSection.quizzes = data;
+    
+        this.$nextTick(() => {
+          if (window.lucide) {
+            lucide.createIcons();
+          }
+        });
       } catch (error) {
         console.error("Failed to fetch quizzes:", error);
       }
     },
 
+    removeQuiz(quizId) {
+      this.quizDashSection.quizzes = this.quizDashSection.quizzes.filter(
+        (quiz) => quiz.id !== quizId,
+      );
+    },
+
     toggleProfileMenu() {
       this.profileMenuOpen = !this.profileMenuOpen;
+    },
+    
+    openQuiz(quizId) {
+      this.quizMakerVars.openQuizId = quizId;
+      this.quizMakerVars.quizMakerOpen = true;
     },
 
     changeSection(direction) {
